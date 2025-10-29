@@ -1,5 +1,5 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
-WORKDIR /src
+WORKDIR /
 
 COPY *.sln ./
 COPY Ecommerce.API/*.csproj ./Ecommerce.API/
