@@ -2,7 +2,7 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
 COPY *.sln ./
-COPY Ecommerce.API/*.csproj ./EcommerceApi/
+COPY Ecommerce.API/*.csproj ./Ecommerce.API/
 COPY Core/*.csproj ./Core/
 COPY Infrastructure/*.csproj ./Infrastructure/
 RUN dotnet restore
