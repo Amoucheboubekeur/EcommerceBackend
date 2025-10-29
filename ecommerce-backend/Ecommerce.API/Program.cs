@@ -91,16 +91,10 @@ namespace Ecommerce.API
             // =========================================================
             // 🧩 4️⃣ CONFIGURATION CORS (pour Next.js)
             // =========================================================
-            builder.Services.AddCors(options =>
-            {
-                options.AddPolicy("AllowNextApp", policy =>
-                {
-                    policy.WithOrigins("http://localhost:3000")
-                          .AllowAnyHeader()
-                          .AllowAnyMethod()
-                          .AllowCredentials();
-                });
-            });
+       app.UseCors(policy => policy
+    .AllowAnyOrigin()
+    .AllowAnyMethod()
+    .AllowAnyHeader());
 
             // =========================================================
             // 🧩 5️⃣ DEPENDENCY INJECTION (DDD)
@@ -137,7 +131,7 @@ namespace Ecommerce.API
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
+          
             app.UseCors("AllowNextApp");
 
             // ✅ Sert les images statiques
