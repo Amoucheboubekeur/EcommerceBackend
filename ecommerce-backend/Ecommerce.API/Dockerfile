@@ -2,14 +2,14 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
 COPY *.sln ./
-COPY EcommerceApi/*.csproj ./EcommerceApi/
+COPY Ecommerce.API/*.csproj ./EcommerceApi/
 COPY Core/*.csproj ./Core/
 COPY Infrastructure/*.csproj ./Infrastructure/
 RUN dotnet restore
 
 COPY . .
 
-WORKDIR /src/EcommerceApi
+WORKDIR /src/Ecommerce.API
 RUN dotnet publish -c Release -o /app/out
 
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
