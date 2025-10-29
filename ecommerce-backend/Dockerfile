@@ -1,25 +1,31 @@
-# Stage 1: Build
+# Étape 1 : Build
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
-# Copier tous les fichiers de solution
+# Copier le fichier .sln et les projets
+COPY *.sln ./
+COPY EcommerceApi/*.csproj EcommerceApi/
+
+# Restaurer les dépendances
+RUN dotnet restore
+
+# Copier le reste du code
 COPY . .
 
-# Restaurer toutes les dépendances
-RUN dotnet restore ./EcommerceApi/EcommerceApi.csproj
+# Compiler et publier
+WORKDIR /src/EcommerceApi
+RUN dotnet publish -c Release -o /app/out
 
-# Publier le projet API (Release)
-RUN dotnet publish ./EcommerceApi/EcommerceApi.csproj -c Release -o /app/out
-
-# Stage 2: Runtime
+# Étape 2 : Runtime
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app
 
-# Copier les fichiers publiés
+# Copier les fichiers publiés depuis l'étape build
 COPY --from=build /app/out .
 
-# Exposer le port (Render lira la variable PORT)
-EXPOSE 7146
+# Exposer le port (Render utilisera automatiquement la variable PORT)
+ENV ASPNETCORE_URLS=http://+:$PORT
+EXPOSE 8080
 
-# Définir le point d'entrée
+# Démarrer l'application
 ENTRYPOINT ["dotnet", "EcommerceApi.dll"]
