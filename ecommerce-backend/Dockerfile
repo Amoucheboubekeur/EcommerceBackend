@@ -1,17 +1,20 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
-# Copier seulement les fichiers .csproj qui existent
+# Copier le fichier solution
 COPY *.sln ./
+
+# Copier les fichiers .csproj avec la structure RÉELLE de votre projet
 COPY Ecommerce.API/*.csproj ./Ecommerce.API/
-# Supprimer ou commenter les lignes pour les dossiers manquants
-# COPY Core/*.csproj ./Core/
-# COPY Infrastructure/*.csproj ./Infrastructure/
+COPY Ecommerce.Domain/*.csproj ./Ecommerce.Domain/
+COPY Ecommerce.Application/*.csproj ./Ecommerce.Application/
+COPY Ecommerce.Infrastructure/*.csproj ./Ecommerce.Infrastructure/
+
 RUN dotnet restore
 
 COPY . .
 
-WORKDIR /Ecommerce.API
+WORKDIR /src/Ecommerce.API
 RUN dotnet publish -c Release -o /app/out
 
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
