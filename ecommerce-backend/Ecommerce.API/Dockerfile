@@ -9,7 +9,7 @@ RUN dotnet restore
 
 COPY . .
 
-WORKDIR /src/Ecommerce.API
+WORKDIR /Ecommerce.API
 RUN dotnet publish -c Release -o /app/out
 
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
