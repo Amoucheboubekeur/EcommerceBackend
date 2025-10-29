@@ -19,5 +19,5 @@ COPY --from=build /app/out .
 EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080
 
-ENTRYPOINT ["dotnet", "EcommerceApi.dll"]
+ENTRYPOINT ["dotnet", "Ecommerce.API.dll"]
 
