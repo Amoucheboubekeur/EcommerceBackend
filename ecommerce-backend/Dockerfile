@@ -1,10 +1,12 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
-WORKDIR /
+WORKDIR /src
 
+# Copier seulement les fichiers .csproj qui existent
 COPY *.sln ./
 COPY Ecommerce.API/*.csproj ./Ecommerce.API/
-COPY Core/*.csproj ./Core/
-COPY Infrastructure/*.csproj ./Infrastructure/
+# Supprimer ou commenter les lignes pour les dossiers manquants
+# COPY Core/*.csproj ./Core/
+# COPY Infrastructure/*.csproj ./Infrastructure/
 RUN dotnet restore
 
 COPY . .
