@@ -5,7 +5,8 @@ using System.Text.Json.Serialization;
 
 namespace Ecommerce.Domain.Entities;
 
-[Table("Products")]
+[Table("Products", Schema = "catalog")]
+
 public class Product(string title, string? description, decimal price, int stock, Guid categoryId, string userId, decimal? discountPercentage, DateTime? discountStartDate, DateTime? discountEndDate, decimal deliveryPriceMaison, decimal deliveryPriceBureau)
 {
     public Guid Id { get; private set; } = Guid.NewGuid();
