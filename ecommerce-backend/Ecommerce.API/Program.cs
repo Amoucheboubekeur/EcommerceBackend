@@ -24,12 +24,14 @@ namespace Ecommerce.API
             // =========================================================
      
 
+ 
+   
 
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("StrictPolicy", policy =>
                 {
-                    policy.WithOrigins("http://localhost:3000")
+                    policy.WithOrigins("http://localhost:10000","http://10.18.181.72:10000")
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials();
