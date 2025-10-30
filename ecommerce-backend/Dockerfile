@@ -24,5 +24,6 @@ COPY --from=build /app/out .
 EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080
 # Ajoutez cette ligne avant ENTRYPOINT
-RUN mkdir -p /app/uploads && chmod 755 /app/uploads
+RUN mkdir -p /app/uploads/products && \
+    chmod -R 777 /app/uploads
 ENTRYPOINT ["dotnet", "Ecommerce.API.dll"]
