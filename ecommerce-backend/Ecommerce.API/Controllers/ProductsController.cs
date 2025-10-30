@@ -10,7 +10,7 @@ namespace Ecommerce.API.Controllers;
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "SuperAdmin")] // Seul le SuperAdmin peut accéder ici
+[Authorize(Roles = "SuperAdmin,Admin")] // Seul le SuperAdmin peut accéder ici
 
 
     public class ProductsController(IProductService service) : ControllerBase
