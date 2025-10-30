@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
-using Npgsql;
 using System.Text;
 
 namespace Ecommerce.API
@@ -21,13 +20,26 @@ namespace Ecommerce.API
             var builder = WebApplication.CreateBuilder(args);
 
             // =========================================================
-            // 🧩 1️⃣ CONFIGURATION DATABASE — PostgreSQL
+            // 🧩 1️⃣ CONFIGURATION CORS (DOIT ÊTRE EN PREMIER)
+            // =========================================================
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", policy =>
+                {
+                    policy.AllowAnyOrigin()
+                          .AllowAnyMethod()
+                          .AllowAnyHeader();
+                });
+            });
+
+            // =========================================================
+            // 🧩 2️⃣ CONFIGURATION DATABASE — PostgreSQL
             // =========================================================
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             // =========================================================
-            // 🧩 2️⃣ CONFIGURATION IDENTITY (sans cookie MVC)
+            // 🧩 3️⃣ CONFIGURATION IDENTITY
             // =========================================================
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
@@ -55,7 +67,7 @@ namespace Ecommerce.API
             });
 
             // =========================================================
-            // 🧩 3️⃣ AUTHENTIFICATION JWT
+            // 🧩 4️⃣ AUTHENTIFICATION JWT
             // =========================================================
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -72,48 +84,20 @@ namespace Ecommerce.API
                             Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)
                         )
                     };
-
-                    // ✅ Empêche la redirection vers /Account/Login
-                    options.Events = new JwtBearerEvents
-                    {
-                        OnChallenge = context =>
-                        {
-                            context.HandleResponse();
-                            context.Response.StatusCode = 401;
-                            context.Response.ContentType = "application/json";
-                            return context.Response.WriteAsync("{\"error\": \"Unauthorized\"}");
-                        }
-                    };
                 });
 
             builder.Services.AddAuthorization();
-
-            // =========================================================
-            // 🧩 4️⃣ CONFIGURATION CORS (pour Next.js)
-            // =========================================================
-            builder.Services.AddCors(options =>
-            {
-                options.AddPolicy("AllowAll", policy =>
-                {
-                    policy.AllowAnyOrigin()
-                          .AllowAnyMethod()
-                          .AllowAnyHeader();
-                });
-            });
 
             // =========================================================
             // 🧩 5️⃣ DEPENDENCY INJECTION (DDD)
             // =========================================================
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
             builder.Services.AddScoped<ICategoryService, CategoryService>();
-
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddScoped<IProductService, ProductService>();
-
             builder.Services.AddScoped<IVariantProductRepository, VariantProductRepository>();
             builder.Services.AddScoped<IOrderRepository, OrderRepository>();
             builder.Services.AddScoped<IOrderService, OrderService>();
-
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<JwtService>();
             builder.Services.AddScoped<PasswordHasher>();
@@ -128,8 +112,12 @@ namespace Ecommerce.API
             var app = builder.Build();
 
             // =========================================================
-            // 🧩 7️⃣ PIPELINE MIDDLEWARE (ORDRE CRITIQUE !)
+            // 🧩 7️⃣ PIPELINE MIDDLEWARE - ORDRE CRITIQUE
             // =========================================================
+
+            // ✅ CORS DOIT ÊTRE TRÈS TÔT DANS LE PIPELINE
+            app.UseCors("AllowAll");
+
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -137,35 +125,36 @@ namespace Ecommerce.API
             }
 
             app.UseRouting();
-
-            // ✅ CORS DOIT ÊTRE ICI - après UseRouting(), avant UseAuthentication()
-            app.UseCors("AllowAll");
-
             app.UseAuthentication();
             app.UseAuthorization();
 
             // ✅ Sert les images statiques
+            var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "uploads");
+            if (!Directory.Exists(uploadsPath))
+            {
+                Directory.CreateDirectory(uploadsPath);
+            }
+
             app.UseStaticFiles(new StaticFileOptions
             {
-                FileProvider = new PhysicalFileProvider(
-                    Path.Combine(Directory.GetCurrentDirectory(), "uploads")),
+                FileProvider = new PhysicalFileProvider(uploadsPath),
                 RequestPath = "/uploads"
             });
 
             app.MapControllers();
 
-            // 🔹 Test automatique de la connexion PostgreSQL au démarrage
+            // 🔹 Test automatique de la connexion PostgreSQL
             using (var scope = app.Services.CreateScope())
             {
                 var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
                 try
                 {
                     db.Database.Migrate();
-                    Console.WriteLine("✅ Connexion PostgreSQL réussie et base à jour !");
+                    Console.WriteLine("✅ Connexion PostgreSQL réussie !");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"❌ Erreur connexion PostgreSQL : {ex.Message}");
+                    Console.WriteLine($"❌ Erreur PostgreSQL : {ex.Message}");
                 }
             }
 
