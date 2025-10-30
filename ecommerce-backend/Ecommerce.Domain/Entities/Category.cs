@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace Ecommerce.Domain.Entities;
-[Table("Categories")]
+[Table("Categories", Schema = "catalog")] 
 
 public class Category
 {
