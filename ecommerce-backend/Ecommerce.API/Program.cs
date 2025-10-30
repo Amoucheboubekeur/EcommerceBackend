@@ -31,7 +31,7 @@ namespace Ecommerce.API
             {
                 options.AddPolicy("StrictPolicy", policy =>
                 {
-                    policy.WithOrigins("http://localhost:10000","http://10.18.181.72:10000")
+                    policy.WithOrigins("http://localhost:10000","http://10.18.181.72:10000","https://ecommerce-frontend-1d8j.onrender.com")
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials();
