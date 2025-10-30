@@ -1,4 +1,4 @@
-﻿using Ecommerce.Application.Interfaces;
+using Ecommerce.Application.Interfaces;
 using Ecommerce.Application.Services;
 using Ecommerce.Domain.Entities;
 using Ecommerce.Domain.Interfaces;
@@ -91,7 +91,15 @@ namespace Ecommerce.API
             // =========================================================
             // 🧩 4️⃣ CONFIGURATION CORS (pour Next.js)
             // =========================================================
-    
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", policy =>
+                {
+                    policy.AllowAnyOrigin()
+                          .AllowAnyMethod()
+                          .AllowAnyHeader();
+                });
+            });
 
             // =========================================================
             // 🧩 5️⃣ DEPENDENCY INJECTION (DDD)
@@ -120,7 +128,7 @@ namespace Ecommerce.API
             var app = builder.Build();
 
             // =========================================================
-            // 🧩 7️⃣ PIPELINE MIDDLEWARE
+            // 🧩 7️⃣ PIPELINE MIDDLEWARE (ORDRE CRITIQUE !)
             // =========================================================
             if (app.Environment.IsDevelopment())
             {
@@ -128,11 +136,13 @@ namespace Ecommerce.API
                 app.UseSwaggerUI();
             }
 
-             app.UseCors(policy => policy
-    .AllowAnyOrigin()
-    .AllowAnyMethod()
-    .AllowAnyHeader());
-           
+            app.UseRouting();
+
+            // ✅ CORS DOIT ÊTRE ICI - après UseRouting(), avant UseAuthentication()
+            app.UseCors("AllowAll");
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             // ✅ Sert les images statiques
             app.UseStaticFiles(new StaticFileOptions
@@ -141,10 +151,6 @@ namespace Ecommerce.API
                     Path.Combine(Directory.GetCurrentDirectory(), "uploads")),
                 RequestPath = "/uploads"
             });
-
-            app.UseRouting();
-            app.UseAuthentication();
-            app.UseAuthorization();
 
             app.MapControllers();
 
