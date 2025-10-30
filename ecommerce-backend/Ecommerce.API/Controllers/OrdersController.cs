@@ -8,10 +8,10 @@ using System.Security.Claims;
 
 namespace Ecommerce.API.Controllers
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    [ApiController]
-    [Route("api/[controller]")]
-    [Authorize]
+   [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+[ApiController]
+[Route("api/[controller]")]
+[Authorize(Roles = "SuperAdmin")] // Seul le SuperAdmin peut accéder ici
     public class OrdersController(IOrderService orderService) : ControllerBase
     {
         private readonly IOrderService _orderService = orderService;
