@@ -7,10 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Ecommerce.API.Controllers;
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-
-    [ApiController]
-    [Route("api/[controller]")]
-    [Authorize]
+[ApiController]
+[Route("api/[controller]")]
+[Authorize(Roles = "SuperAdmin")] // Seul le SuperAdmin peut accéder icie]
     public class CategoriesController(ICategoryService service) : ControllerBase
     {
         private readonly ICategoryService _service = service;
