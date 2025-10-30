@@ -22,16 +22,24 @@ namespace Ecommerce.API
             // =========================================================
             // 🧩 1️⃣ CONFIGURATION CORS (DOIT ÊTRE EN PREMIER)
             // =========================================================
+     
+
+
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("AllowAll", policy =>
+                options.AddPolicy("StrictPolicy", policy =>
                 {
-                    policy.AllowAnyOrigin()
-                          .AllowAnyMethod()
-                          .AllowAnyHeader();
+                    policy.WithOrigins("http://localhost:3000/",
+                      
+                        )
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
                 });
             });
 
+
+            
             // =========================================================
             // 🧩 2️⃣ CONFIGURATION DATABASE — PostgreSQL
             // =========================================================
@@ -116,7 +124,7 @@ namespace Ecommerce.API
             // =========================================================
 
             // ✅ CORS DOIT ÊTRE TRÈS TÔT DANS LE PIPELINE
-            app.UseCors("AllowAll");
+            app.UseCors("StrictPolicy");
 
             if (app.Environment.IsDevelopment())
             {
