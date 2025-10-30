@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace Ecommerce.Domain.Entities;
 
-[Table("Orders")]
+[Table("Orders", Schema = "orders")]
 
 public class Order
 {

@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace Ecommerce.Domain.Entities;
 
-[Table("OrderItems")]
+[Table("OrderItems", Schema = "orders"))]
 public class OrderItem
 {
     public Guid Id { get; set; }
